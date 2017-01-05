@@ -110,12 +110,6 @@ public class Sketch extends PApplet {
         recognizeButton = new MyButton(recognizeButtonX0, recognizeButtonY0, recognizeButtonHeight, recognizeButtonWidth, "answ");
         recognizeButton.display();
 
-        recognize10TimesButton = new MyButton(recognize10TimesButtonX0, recognize10TimesButtonY0, recognize10TimesButtonHeight, recognize10TimesButtonWidth, "answ   x10");
-        recognize10TimesButton.display();
-
-        copyToEditButton = new MyButton(copyToEditButtonX0, copyToEditButtonY0, copyToEditButtonHeight, copyToEditButtonWidth, "copy");
-        copyToEditButton.display();
-
         drawButton = new MyButton(drawButtonX0, drawButtonY0, drawButtonHeight, drawButtonWidth, "draw");
         drawButton.display();
 
@@ -153,21 +147,15 @@ public class Sketch extends PApplet {
             switchColorOfCell(x, y);
         } else if (btn.btnClicked(clearButton, x, y)) {
             btn.clear(grid, rows, cols);
-
         } else if (btn.btnClicked(learnButton, x, y)) {
-//            LinearMachines = btn.learn(LinearMachines);
             btn.learn();
             System.out.println("nauczyl sie");
+            MyButton but = new MyButton(grid2[0][0].x, grid2[0][grid2.length -1].y + 30, 30, 100, "done");
+            but.display();
         } else if (btn.btnClicked(recognizeButton, x, y)) {
             btn.clear(grid2, rows, cols);
             grid2 = Calculations.copyGrid(btn.answer(grid), grid2);
-//            Printer.printMatrix(grid2);
             drawGrid(grid2);
-//            double[] output = btn.answer(LinearMachines, grid);
-//            drawGrid(output, grid2);
-
-        } else if (btn.btnClicked(copyToEditButton, x, y)) {
-            btn.copyToEdit(grid2, grid);
         } else if (btn.btnClicked(drawButton, mouseX, mouseY)) {
             draw = true;
         } else if (btn.btnClicked(ereaseButton, mouseX, mouseY)) {
@@ -203,12 +191,6 @@ public class Sketch extends PApplet {
             double[][] tmpGrid = ImageManager.loadImage(a);
             drawGrid(Calculations.matrixToVector(tmpGrid), grid);
         }
-
-//        if (key == "2") {
-//            btn.clear(grid2, rows, cols);
-//            drawGrid(Calculations.matrixToVector(grid), grid2);
-////         btn.copyToEdit(grid, grid2);   
-//        }
     }
 
     public class Cell {

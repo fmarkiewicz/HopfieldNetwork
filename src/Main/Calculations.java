@@ -25,20 +25,7 @@ public class Calculations {
         return to;
     }
 
-    static public double[] singlePerceptronLearning(int index, int active, double[] weights, List<int[]> examples) {
-        for (int i = 0; i < 250; i++) {
-            for (int[] example : examples) {
-                double sum = sumWeights(weights, example);
-                int sign = signum(sum);
-                if (sign != active) {
-
-                }
-            }
-        }
-        return weights;
-    }
-
-    private static int signum(double sum) {
+    public static int signum(double sum) {
         return sum > 0 ? 1 : -1;
     }
 

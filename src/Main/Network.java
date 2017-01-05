@@ -13,20 +13,15 @@ public class Network {
 
     int points;
     int[] output;
-    int[] threshold;
     int[][] weight;
     public String status = "new";
     
     public Network() {
         
         points = 1600;
-        threshold = new int[points];
         weight = new int[points][points];
         output = new int[points];
         
-        for (int i = 0; i < points; i++) {
-            threshold[i] = 0;
-        }
         for (int i = 0; i < weight.length; i++) {
             for (int j = 0; j < weight[0].length; j++) {
                 weight[i][j] = 0;
