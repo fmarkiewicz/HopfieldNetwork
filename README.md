@@ -1,0 +1,2 @@
+# HopfieldNetwork
+Exercise for studies
