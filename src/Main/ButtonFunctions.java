@@ -9,6 +9,7 @@ import Main.Sketch.Cell;
 import Main.Sketch.MyButton;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  *
@@ -16,53 +17,99 @@ import java.util.List;
  */
 public class ButtonFunctions {
 
-    public List<LinearMachine> learn(List<LinearMachine> LinearMachines) {
+    public void learn() {
         System.out.println("learn");
         List<double[][]> allImgM = ImageManager.loadImages();
         List<double[]> allImgV = new ArrayList<>();
-        List<double[]> allImgVWithBias = new ArrayList<>();
-        for (double[][] example : allImgM) {
-            allImgV.add(Calculations.matrixToVector(example));
-//            Printer.printVector(Calculations.matrixToVector(example));
-//            double[] imgV = Calculations.matrixToVector(example);
-//            allImgVWithBias.add(Calculations.addBiasToVector(imgV));
-        }
-        allImgVWithBias = Calculations.addBiasToVector(allImgV);
-        for (int i = 0; i < 250; i++) {
-            for (double[] example : allImgVWithBias) {
-                for (int j = 0; j < example.length; j++) {
-                    if (example[j] == 1) {
-                        LinearMachines.get(j).learn(example, 1);
-                    } else {
-                        LinearMachines.get(j).learn(example, -1);
+        allImgV = Calculations.matrixListToVectorList(allImgM);
+//        for (double[][] example : allImgM) {
+//            allImgV.add(Calculations.matrixToVector(example));
+//        }
+        for (int i = 0; i < Sketch.network.points; i++) {
+            for (int j = 0; j < Sketch.network.points; j++) {
+                int weight = 0;
+                if (i != j) {
+                    for (double[] vector : allImgV) {
+                        weight += vector[i] * vector[j];
                     }
                 }
+                
+                Sketch.network.weight[i][j] = weight;
             }
         }
-        return LinearMachines;
+        Printer.printMatrix(Sketch.network.weight);
+        
     }
 
-    public double[] answer(List<LinearMachine> LinearMachines, Cell[][] grid) {
+    public Cell[][] answer(Cell[][] grid) {
         System.out.println("asnwer");
-        int size = grid.length * grid[0].length;
-        double[] input = new double[size];
-        double[] output = new double[size];
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[0].length; j++) {
-                input[i * grid[0].length + j] = grid[i][j].active;
-            }
+        int[] input = Calculations.matrixToVector(grid);
+        setInput(input);
+        System.out.println(Sketch.network.status);
+        asynCor();
+        input = getOutput(input);
+        System.out.println(Sketch.network.status);
+        Printer.printVector(input);
+        for (int i = 0; i< input.length; i++) {
+            grid[(int)i/40][i%40].active = input[i];
         }
+        
+        return grid;
+        
+    }
 
-        for (int i = 0; i < size; i++) {
-            if (LinearMachines.get(i).getValue(input) == 1) {
-                output[i] = 1;
-            } else {
-                output[i] = -1;
-            }
+    void setInput(int[] input) {
+        for (int i = 0; i < Sketch.network.points; i++) {
+            Sketch.network.output[i] = input[i];
         }
+        Sketch.network.status = "after setInput";
+    }
+
+    int[] getOutput(int[] output) {
+        for (int i = 0; i < Sketch.network.points; i++) {
+            output[i] = Sketch.network.output[i];
+        }
+        Sketch.network.status = "after getOutput";
         return output;
     }
 
+    boolean nextIteration(int i) {
+        int sum = 0, out = 0;
+        boolean changed = false;
+
+        for (int j = 0; j < Sketch.network.points; j++) {
+            sum += Sketch.network.weight[i][j] * Sketch.network.output[j];
+        }
+        
+        if(sum != Sketch.network.threshold[i]) {
+            if( sum < Sketch.network.threshold[i]) {
+                out = -1;
+            }
+            if( sum > Sketch.network.threshold[i]) {
+                out = 1;
+            }
+            if(out != Sketch.network.output[i]) {
+                changed = true;
+                Sketch.network.output[i] = out;
+            }
+        }
+        return changed;
+    }
+
+    void asynCor() {
+        Random rand = new Random();
+        int iteration = 0;
+        int iterationOfLastChange = 0;
+        
+        do {
+            iteration++;
+            
+            if(nextIteration(rand.nextInt(Sketch.network.points))) {
+                iterationOfLastChange = iteration;
+            }
+        } while (iteration-iterationOfLastChange < 40*Sketch.network.points);
+    }
+    
     public void save(Cell[][] grid) {
         ImageManager.saveImage(grid);
     }

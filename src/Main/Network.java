@@ -15,6 +15,7 @@ public class Network {
     int[] output;
     int[] threshold;
     int[][] weight;
+    public String status = "new";
     
     public Network() {
         

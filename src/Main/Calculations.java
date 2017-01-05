@@ -16,19 +16,27 @@ import java.util.Random;
  */
 public class Calculations {
 
+    static public Cell[][] copyGrid(Cell[][] from, Cell[][] to) {
+        for (int i = 0; i < from.length; i++) {
+            for (int j = 0; j < from[0].length; j++) {
+                to[i][j].active = from[i][j].active;
+            }
+        }
+        return to;
+    }
+
     static public double[] singlePerceptronLearning(int index, int active, double[] weights, List<int[]> examples) {
         for (int i = 0; i < 250; i++) {
             for (int[] example : examples) {
                 double sum = sumWeights(weights, example);
                 int sign = signum(sum);
                 if (sign != active) {
-                    
+
                 }
             }
         }
         return weights;
     }
-   
 
     private static int signum(double sum) {
         return sum > 0 ? 1 : -1;
@@ -58,7 +66,7 @@ public class Calculations {
 //        Printer.printVector(vector);
         return vector;
     }
-    
+
     static public int[] matrixToVector(Cell[][] matrix) {
         //konwertuje pojedyncza macierz przykladu do wektora przykladu
         int[] vector = new int[matrix.length * matrix.length];
@@ -67,7 +75,7 @@ public class Calculations {
                 vector[i * matrix[0].length + j] = matrix[i][j].active;
             }
         }
-        Printer.printVector(vector);
+//        Printer.printVector(vector);
         return vector;
     }
 
@@ -101,7 +109,6 @@ public class Calculations {
 //        th = rand.nextDouble() - 0.5;
 //        return th;
 //    }
-
 //    static public double[] getWeightsWithBias(int vectorLength) {
 ////        , double threshold
 //        Random rand = new Random();

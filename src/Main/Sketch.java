@@ -79,7 +79,7 @@ public class Sketch extends PApplet {
     int saveImgButtonWidth = learnButtonWidth;
     int saveImgButtonHeight = learnButtonHeight;
 
-    List<LinearMachine> LinearMachines = new ArrayList<>();
+    static Network network = new Network();
 
     static public void main(String args[]) {
         PApplet.main(new String[]{"Main.Sketch"});
@@ -87,10 +87,6 @@ public class Sketch extends PApplet {
 
     @Override
     public void setup() {
-
-        for (int i = 0; i < cols * rows + 1; i++) {
-            LinearMachines.add(new LinearMachine());
-        }
 
         textSize(25);
         grid = new Cell[cols][rows];
@@ -157,26 +153,19 @@ public class Sketch extends PApplet {
             switchColorOfCell(x, y);
         } else if (btn.btnClicked(clearButton, x, y)) {
             btn.clear(grid, rows, cols);
+
         } else if (btn.btnClicked(learnButton, x, y)) {
-            LinearMachines = btn.learn(LinearMachines);
+//            LinearMachines = btn.learn(LinearMachines);
+            btn.learn();
             System.out.println("nauczyl sie");
         } else if (btn.btnClicked(recognizeButton, x, y)) {
             btn.clear(grid2, rows, cols);
-            double[] output = btn.answer(LinearMachines, grid);
-            drawGrid(output, grid2);
-        } else if (btn.btnClicked(recognize10TimesButton, x, y)) {
-            for (int i = 0; i < 10; i++) {
-                btn.clear(grid2, rows, cols);
+            grid2 = Calculations.copyGrid(btn.answer(grid), grid2);
+//            Printer.printMatrix(grid2);
+            drawGrid(grid2);
+//            double[] output = btn.answer(LinearMachines, grid);
+//            drawGrid(output, grid2);
 
-                double[] output = btn.answer(LinearMachines, grid);
-                drawGrid(output, grid2);
-                btn.copyToEdit(grid2, grid);
-//                try {
-//                    Thread.sleep(500);
-//                } catch (InterruptedException ex) {
-//                    Logger.getLogger(Sketch.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-            }
         } else if (btn.btnClicked(copyToEditButton, x, y)) {
             btn.copyToEdit(grid2, grid);
         } else if (btn.btnClicked(drawButton, mouseX, mouseY)) {
@@ -323,6 +312,14 @@ public class Sketch extends PApplet {
                     tmpGrid[i][j].changeActive();
                     tmpGrid[i][j].display();
                 }
+            }
+        }
+    }
+
+    private void drawGrid(Cell[][] tmpGrid) {
+        for (int i = 0; i < tmpGrid.length; i++) {
+            for (int j = 0; j < tmpGrid[0].length; j++) {
+                tmpGrid[i][j].display();
             }
         }
     }
